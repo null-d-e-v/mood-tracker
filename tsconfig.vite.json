@@ -5,7 +5,8 @@
     "app/**/*",
     "app/**/.server/**/*",
     "app/**/.client/**/*",
-    "server/**/*"
+    "server/**/*",
+    "core"
   ],
   "compilerOptions": {
     "composite": true,
@@ -19,7 +20,8 @@
     "baseUrl": ".",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "~/core/*": ["./core/*"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true
