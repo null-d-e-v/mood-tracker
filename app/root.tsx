@@ -9,6 +9,8 @@ import {
   Outlet,
 } from "react-router";
 
+import { Toaster } from "~/components/ui/sonner";
+
 import type { Route } from "./+types/root";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -22,6 +24,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <Toaster theme="light" />
         {children}
         <ScrollRestoration />
         <Scripts />

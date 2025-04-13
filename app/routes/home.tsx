@@ -1,61 +1,31 @@
-import React from "react";
-import { Await } from "react-router";
+import { Form } from "react-router";
+
+import { getPageTitle } from "~/client/shared/page/title";
+import { createClient } from "~/core/shared/supabase/client";
+import { withAuth } from "~/core/user/middlewares/auth";
 
 import type { Route } from "./+types/home";
 
 export function meta() {
   return [
-    { title: "CodeHive" },
+    { title: getPageTitle({ title: "Inicio" }) },
     { name: "description", content: "CodeHive Template" },
   ];
 }
 
-export function loader({ request, context }: Route.LoaderArgs) {
-  // Express context
-  const { EXPRESS_CONTEXT_EXAMPLE: express } = context;
-
-  // Search Params
-  const url = new URL(request.url);
-  const name = url.searchParams.get("name") ?? 'Use "?name=<string>" in url';
-
-  // Async operation
-  const getAsyncOperation = async () => {
-    await new Promise((res) => setTimeout(res, 5000));
-    return "Promised value";
-  };
-
-  const asyncValue = getAsyncOperation();
-
-  return { name, express, asyncValue };
-}
+export const loader = withAuth(async ({ request }: Route.LoaderArgs) => {
+  const { supabase } = createClient({ request });
+  const { data } = await supabase.auth.getUser();
+  return { username: data.user?.user_metadata.username };
+});
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { name, express, asyncValue } = loaderData;
-
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold text-primary">Index Page</h1>
-
-      <ul className="list-disc list-inside mt-4 font-mon">
-        <li>URL SearchParams: {name}</li>
-        <li>Express Context: {express}</li>
-        <li>
-          Async Value:{" "}
-          <React.Suspense
-            fallback={
-              <span className="animate-pulse">
-                <span className="bg-gray-300 text-gray-500 min-h-2 px-8 rounded-lg">
-                  Cargando
-                </span>
-              </span>
-            }
-          >
-            <Await resolve={asyncValue}>
-              {(value) => <span>{value}</span>}
-            </Await>
-          </React.Suspense>
-        </li>
-      </ul>
+      {loaderData.username}
+      <Form action="/signout" method="POST">
+        <button type="submit">SignOut</button>
+      </Form>
     </main>
   );
 }
